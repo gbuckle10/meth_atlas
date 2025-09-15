@@ -35,7 +35,7 @@ def hide_small_tissues(df):
     """
     others = df[df < OTHERS_THRESH].sum()
     df[df < OTHERS_THRESH] = 0.0
-    df = df.append(others.rename('other'))
+    df = pd.concat([df, others.rename('other')])
     return df
 
 
@@ -52,7 +52,7 @@ def gen_bars_colors_hatches(nr_tissues):
     nr_colors = int(math.ceil(nr_tissues / len(hatches)) + 1)
 
     # generate bars colors:
-    cmap = matplotlib.cm.get_cmap(COLOR_MAP)
+    cmap = matplotlib.colormaps.get_cmap(COLOR_MAP)
     norm = matplotlib.colors.Normalize(vmin=0.0, vmax=float(nr_colors))
     colors = [cmap(norm(k)) for k in range(nr_colors)]
 
