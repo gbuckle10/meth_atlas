@@ -146,6 +146,10 @@ class Deconvolve:
         df = pd.read_csv(atlas_path)
         df.rename(columns={list(df)[0]: 'acc'}, inplace=True)
         df = df.sort_values(by='acc').drop_duplicates(subset='acc').reset_index(drop=True)
+
+        print("Top 5 atlas entries loaded by deconvolution:")
+        print(df.head())
+
         return df
 
     @staticmethod
@@ -170,8 +174,8 @@ class Deconvolve:
             if input_head.shape[1] < 2:
                 err_msg = 'file must contain at least 2 columns (accessions and a values). '
 
-            # first column must be Illumina IDs column
-            elif not str(input_head.iloc[0, 0]).startswith('cg'):
+            # first column must be genome co-ordinate column --MODIFIED FROM ORIGINAL--
+            elif not str(input_head.iloc[0, 0]).startswith('chr'):
                     err_msg = 'invalid Illumina ID column'
 
             # print a warning if the second column in the csv file has a numeric header
@@ -224,6 +228,12 @@ class Deconvolve:
         samples.rename(columns={list(samples)[0]: 'acc'}, inplace=True)
         samples = samples.sort_values(by='acc').drop_duplicates(subset='acc').reset_index(drop=True)
         samples = samples.merge(self.atlas['acc'].to_frame(), how='inner', on='acc')
+
+        print("Top 5 samples for deconvolution:")
+        print(samples.head())
+
+        #samples.to_csv("data/analysis/_decon_samples_loaded.csv")
+
         return samples
 
     def run(self):
@@ -246,6 +256,11 @@ class Deconvolve:
         for i in range(len(arr)):
             res_table[:, i], resids_table[i] = arr[i]
         df = pd.DataFrame(res_table, columns=self.samples.columns, index=list(self.atlas.columns)[1:])
+
+        print("Top 5 entries in res_table:")
+        print(df.head())
+
+
 
         # Dump results
         out_path = self.out_bname + '_deconv_output.csv'
@@ -290,6 +305,8 @@ def main():
     parser.add_argument('--out_dir', '-o', default=OUT_PATH, help='Output directory')
 
     args = parser.parse_args()
+
+    print(args)
 
     Deconvolve(atlas_path=args.atlas_path,
                samp_path=args.samples_path,
