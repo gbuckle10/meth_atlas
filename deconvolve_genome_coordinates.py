@@ -210,6 +210,9 @@ class Deconvolve:
         samp = data.iloc[:, 0]
         red_atlas = data.iloc[:, 1:]
 
+        print(f"Deconvoluting based on red_atlas - {red_atlas} and samp {samp}")
+
+
         # get the mixture coefficients by deconvolution (non-negative least squares)
         mixture, residual = optimize.nnls(red_atlas, samp)
         mixture /= np.sum(mixture)
